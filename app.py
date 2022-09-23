@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import streamlit as st
-
+import sklearn
 import pickle
 
 df = pd.read_csv("./data/train.csv")
@@ -50,7 +50,7 @@ if nav== "Data":
         st.title("Features for model fit")
         st.write(df[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch']].columns)
 
-if nav == "Prediction":
+if nav == "Predictions":
     st.markdown(
     """ #### Welcome to the predictions page.
     """
@@ -71,9 +71,9 @@ if nav == "Prediction":
 
     # Using "wigdets" for user interaction: 
 
-    col1, col2, col3 = st.colums(3)
+    col1, col2, col3 = st.columns(3)
 
-    col1.number_input(
+    gender= col1.number_input(
         "Gender (type '1' for feminine and '0' for masciline)",
         min_value= 0,
         max_value= 1
@@ -118,6 +118,20 @@ if nav == "Prediction":
             "female_pclass": int(female_pclass),
             "male_pclass": int(male_pclass),
             }
+
+    user_input = pd.DataFrame(
+        user_input, 
+        columns = user_input.keys(), 
+        index = [0]
+        )
+
+    user_input = np.array(user_input).reshape(1, -1)
+
+    pred = clf_LR.predict(user_input)[0]
+    proba = clf_LR.predict_proba(user_input)[0]
+
+    if st.button("Predict"):
+        st.success(f'This person would have survived with a probability of: {round(proba[1], 2)}')
 
 
 
